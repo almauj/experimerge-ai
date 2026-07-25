@@ -3,7 +3,9 @@ from semantic_router.encoders import HuggingFaceEncoder
 from semantic_router.layer import RouteLayer
 
 def build_router():
-    """Configures semantic paths to classify user intent."""
+    """Configures semantic paths to classify user intent.
+        returns: route layer
+    """
     
     # basic chat route with basic intros and exits 
     chat_route = Route(
