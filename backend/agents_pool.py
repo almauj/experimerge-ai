@@ -3,6 +3,16 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 def get_agent_prompts():
     """Returns the specialized system prompts for our senior developer network."""
     
+    # burnout/overwhelm safeguard
+    safeguard_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are a behavior analyst and life coach specialized in identifying signs and patterns overwhelm, frustration,
+         and overwhelm and overcoming challenges. Your priority is to ensure the user does not continue to overhwhelm themselves, having them pause
+         and re-evaluate. Once you sense overwhelm your job is to ask three questions to evaluate how overwhelmed the 
+         user may be feeling. You may discuss other stressers in life. You then suggest breaking down the desired task into smaller pieces or to take a much needed break.
+         """)
+    ])
+    
+    
     # manager agent
     manager_prompt = ChatPromptTemplate.from_messages([
         ("system", """You are the Lead Project Manager and Context Coordinator. 
@@ -33,7 +43,7 @@ def get_agent_prompts():
     ])
     
     # team member agent 
-    team_prompt = ChatPromptTemplate.from_messages([
+    member_prompt = ChatPromptTemplate.from_messages([
         ("system", """You are a Senior Systems Architect and Agile Scrum Master. 
          You excel at project-based learning. Your job is to take in user timelines, goals, and experience levels, 
          and output highly structured, step-by-step development roadmaps broken down into achievable sprints."""),
@@ -65,10 +75,29 @@ def get_agent_prompts():
         ("human", "Draft Response to Review:\n{draft_content}\n\nOriginal User Request:\n{user_input}")
     ])
     
+    profiler_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are an Advanced Behavioral Profiler. Your job is to analyze the recent 
+         conversation history between a user and an AI learning assistant.
+         
+         CURRENT STUDENT PROFILE:
+         Patterns: {current_patterns}
+         Motivations: {current_motivations}
+         Weaknesses: {current_weaknesses}
+         
+         YOUR TASK:
+         Review the fresh dialogue. Detect changes in their technical knowledge, lingering roadblocks, 
+         preferred learning styles, or stated career motivations. Output a crisp summary highlighting 
+         updated user patterns, core motivations, and current technical weaknesses. 
+         Do not include conversational filler; output your evaluation clearly."""),
+        MessagesPlaceholder(variable_name="chat_history")
+    ])
+    
     return {
         "manager": manager_prompt,
         "teacher": teaching_prompt,
-        "team_member": team_prompt,
+        "team_member": member_prompt,
         "mentor": mentor_prompt,
-        "verification": verification_prompt
+        "verification": verification_prompt,
+        "profile": profiler_prompt,
+        "safeguard":safeguard_prompt
     }
